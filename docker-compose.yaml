@@ -1,0 +1,38 @@
+version: '3'
+services:
+  app:
+    image: 'jc21/nginx-proxy-manager:github-pr-2644'
+    container_name: nginx-pm
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    volumes:
+      - ./data:/data
+      - ./data/letsencrypt:/etc/letsencrypt
+    environment:
+      # Mysql/Maria connection parameters:
+      DB_MYSQL_HOST: "db"
+      DB_MYSQL_PORT: 3306
+      DB_MYSQL_USER: "admin"
+      DB_MYSQL_PASSWORD: "nhbvbnbk"
+      DB_MYSQL_NAME: "npm"
+      # Uncomment this if IPv6 is not enabled on your host
+      DISABLE_IPV6: 'true'
+
+    depends_on:
+      - db
+
+  db:
+    image: 'jc21/mariadb-aria:10.4.15'
+    container_name: nginx-pm-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: 'nhbvbnbk'
+      MYSQL_DATABASE: 'npm'
+      MYSQL_USER: 'admin'
+      MYSQL_PASSWORD: 'nhbvbnbk'
+      MARIADB_AUTO_UPGRADE: '1'
+    volumes:
+      - ./data/mysql:/var/lib/mysql
